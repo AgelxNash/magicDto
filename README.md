@@ -1,5 +1,5 @@
 ## DBAPI Evolution
-[![Total Downloads](https://poser.pugx.org/agelxnash/laravel-magic-dto/d/total.png)](https://packagist.org/packages/agelxnash/laravel-magic-dto)
+[![Total Downloads](https://poser.pugx.org/agelxnash/laravel-magic-dto/d/total.png)](https://packagist.org/packages/agelxnash/laravel-magic-dto) [![codecov](https://codecov.io/gh/AgelxNash/magicDto/graph/badge.svg?token=U92VBOENZJ)](https://codecov.io/gh/AgelxNash/magicDto)
 
 
 #### Inject eloquent models
@@ -30,7 +30,7 @@
 	</td>
 	<td valign="top">
 		<h4>Donation<br /><br /></h4>
-		<br /><br />
+		<br />
 		<strong>ЮMoney</strong>: <a href="https://yoomoney.ru/to/41001299480137">41001299480137</a><br />
 	</td>
   </tr>

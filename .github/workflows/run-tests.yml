@@ -51,4 +51,11 @@ jobs:
                     composer update --${{ matrix.dependency-version }} --prefer-dist --no-progress
 
             -   name: Execute Unit Tests
-                run: vendor/bin/phpunit --coverage-text
+                run: vendor/bin/phpunit --coverage-text --coverage-clover=build/phpunit/logs/clover.xml
+
+            -   name: "Send code coverage report to codecov.io"
+                uses: "codecov/codecov-action@v4.0.2"
+                with:
+                    files: "build/phpunit/logs/clover.xml"
+                    token: ${{ secrets.CODECOV_TOKEN }}
+                    slug: AgelxNash/magicDto
