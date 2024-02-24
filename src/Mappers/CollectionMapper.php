@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\NativeDto\Mappers;
+namespace AgelxNash\MagicDto\Mappers;
 
-use App\Modules\NativeDto\Attributes\CollectionOf;
-use App\Modules\NativeDto\MapperInterface;
+use AgelxNash\MagicDto\Attributes\CollectionOf;
+use AgelxNash\MagicDto\Contracts\MapperInterface;
 use Illuminate\Support\Collection;
 use ReflectionClass;
 use ReflectionParameter;

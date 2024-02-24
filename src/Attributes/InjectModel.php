@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\NativeDto\Attributes;
+namespace AgelxNash\MagicDto\Attributes;
 
-use App\Modules\NativeDto\WrongTargetException;
+use AgelxNash\MagicDto\Exceptions\WrongTargetException;
 use Attribute;
-use KDServices\Core\Http\Requests\Api\Request;
+use Illuminate\Database\Eloquent\Model;
 
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::TARGET_PARAMETER)]
-class ReplaceRequest
+class InjectModel
 {
     public function __construct(
-        /** @var class-string<Request> $class */
+        /** @var class-string<Model> $class */
         public string $class,
+        public string $field = 'id',
     ) {
-        if (! is_subclass_of($this->class, Request::class)) {
+        if (! is_subclass_of($this->class, Model::class)) {
             throw new WrongTargetException(sprintf(
                 'Class %s given does not implement `%s`',
                 $this->class,
-                Request::class
+                Model::class
             ));
         }
-        dd('q');
     }
 
     public function handle(string $where)

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\NativeDto\Attributes;
+namespace AgelxNash\MagicDto\Attributes;
 
-use App\Modules\NativeDto\DtoInterface;
-use App\Modules\NativeDto\WrongTargetException;
+use AgelxNash\MagicDto\Contracts\DtoInterface;
+use AgelxNash\MagicDto\Exceptions\WrongTargetException;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::TARGET_PARAMETER)]

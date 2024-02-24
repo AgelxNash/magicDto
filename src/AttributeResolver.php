@@ -2,12 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\NativeDto;
+namespace AgelxNash\MagicDto;
 
-use App\Modules\NativeDto\Attributes\ArrayStrict;
+use AgelxNash\MagicDto\Contracts\AttributeResolverInterface;
+use AgelxNash\MagicDto\Contracts\MapperInterface;
+use AgelxNash\MagicDto\Attributes\ArrayStrict;
+use AgelxNash\MagicDto\Exceptions\WrongInputException;
 use ReflectionParameter;
 
-class AttributeResolver
+class AttributeResolver implements AttributeResolverInterface
 {
     /** @var array<MapperInterface> */
     private array $mappers;

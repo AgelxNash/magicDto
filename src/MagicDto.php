@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\NativeDto;
+namespace AgelxNash\MagicDto;
 
+use AgelxNash\MagicDto\Contracts\AttributeResolverInterface;
+use AgelxNash\MagicDto\Contracts\DtoInterface;
+use Illuminate\Container\Container;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Str;
 use LogicException;
@@ -19,12 +22,7 @@ abstract class MagicDto implements DtoInterface
         /** Переименовываем ключи массива перед тем, как создать DTO */
         $keys = self::renameKeys($keys, static fn($key) => Str::camel($key));
 
-        if (!(new ReflectionClass($dtoClass))->implementsInterface(DtoInterface::class)) {
-            throw new LogicException('Не задан нужный интерфейс');
-        }
-
         $params = [];
-
         $rConstructor = new ReflectionMethod($dtoClass, '__construct');
         foreach ($rConstructor->getParameters() as $param) {
             if (!array_key_exists($param->name, $keys)) {
@@ -37,9 +35,9 @@ abstract class MagicDto implements DtoInterface
                 continue;
             }
 
-            $value = $keys[$param->name];
-            $params[$param->name] =
-                $param->getType() === null ? $value : app(AttributeResolver::class)->handle($param, $value);
+            $params[$param->name] = Container::getInstance()
+                ->get(AttributeResolverInterface::class)
+                ->handle($param, $keys[$param->name]);
         }
 
         return new $dtoClass(...$params);
@@ -48,7 +46,15 @@ abstract class MagicDto implements DtoInterface
     public function toArray(): array
     {
         return array_map(static function ($value) {
-            return $value instanceof Arrayable ? $value->toArray() : $value;
+            if ($value instanceof Arrayable) {
+                return $value->toArray();
+            }
+
+            if ($value instanceof \Stringable) {
+                return $value->__toString();
+            }
+
+            return $value;
         }, (array)$this);
     }
 
