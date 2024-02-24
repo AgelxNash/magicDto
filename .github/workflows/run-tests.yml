@@ -39,7 +39,7 @@ jobs:
                 uses: shivammathur/setup-php@v2
                 with:
                     php-version: ${{ matrix.php }}
-                    coverage: none
+                    coverage: pcov
                     tools: composer:v2
                     extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif
 
@@ -49,4 +49,4 @@ jobs:
                     composer update --${{ matrix.dependency-version }} --prefer-dist --no-progress
 
             -   name: Execute Unit Tests
-                run: composer test
+                run: vendor/bin/phpunit --coverage-text
