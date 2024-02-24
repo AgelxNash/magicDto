@@ -20,6 +20,11 @@ class AttributeResolver
     public function handle(ReflectionParameter $param, $value)
     {
         if (in_array($param->getType()?->getName(), ['int', 'bool', 'float', 'string', 'null'], true)) {
+            /** Разрешаем устанавливать null */
+            if (is_null($value) && $param->allowsNull()) {
+                return $value;
+            }
+
             settype($value, $param->getType()->getName());
 
             return $value;
