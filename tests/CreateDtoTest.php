@@ -160,17 +160,17 @@ class CreateDtoTest extends TestCase
             'count' => 3,
             'items' => ['a', 'b', 'c'],
         ]);
-        $this->assertInstanceOf(NestedDto::class, $dto::class);
+        $this->assertInstanceOf(NestedDto::class, $dto);
     }
 
     public function testErrorArrayProperty()
     {
+        $this->expectException(WrongInputException::class);
         $dto = NestedDto::from([
             'price' => 100,
             'count' => 3,
             'items' => 'a',
         ]);
-        $this->expectException(WrongInputException::class);
     }
 
     public function testSkippMapperProperty()
@@ -180,7 +180,7 @@ class CreateDtoTest extends TestCase
             'count' => 3,
             'debug' => (object)['field' => 'value'],
         ]);
-        $this->assertInstanceOf(NestedDto::class, $dto::class);
+        $this->assertInstanceOf(NestedDto::class, $dto);
     }
 
     private function check(array $input)
