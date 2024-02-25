@@ -12,6 +12,8 @@ use ReflectionParameter;
 
 class AttributeResolver implements AttributeResolverInterface
 {
+    public const NATIVE_TYPES = ['int', 'integer', 'bool', 'boolean', 'float', 'string', 'null'];
+
     /** @var array<MapperInterface> */
     private array $mappers;
 
@@ -22,7 +24,7 @@ class AttributeResolver implements AttributeResolverInterface
 
     public function handle(ReflectionParameter $param, $value)
     {
-        if (in_array($param->getType()?->getName(), ['int', 'bool', 'float', 'string', 'null'], true)) {
+        if (in_array($param->getType()?->getName(), self::NATIVE_TYPES, true)) {
             /** Разрешаем устанавливать null */
             if (is_null($value) && $param->allowsNull()) {
                 return $value;

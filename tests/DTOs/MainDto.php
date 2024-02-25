@@ -24,6 +24,8 @@ class MainDto extends MagicDto
         public CarbonImmutable $date,
         public CarbonImmutable $dateTime,
         public ?int $nullableIntProp,
+        #[Account]
+        public Account $account,
         #[InjectModel(Account::class)]
         public Account $idAccount,
         #[InjectModel(Account::class, 'email')]

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace AgelxNash\MagicDto\Tests;
 
 use AgelxNash\MagicDto\Contracts\DtoInterface;
+use AgelxNash\MagicDto\Exceptions\WrongInputException;
+use AgelxNash\MagicDto\Exceptions\WrongTargetException;
 use AgelxNash\MagicDto\MagicDto;
 use AgelxNash\MagicDto\Tests\DTOs\MainDto;
 use AgelxNash\MagicDto\Tests\DTOs\NestedDto;
@@ -22,6 +24,7 @@ class CreateDtoTest extends TestCase
     private MainDto $dto;
     private Account $emailAccount;
     private Account $idAccount;
+    private Account $account;
 
     public function setUp(): void
     {
@@ -42,6 +45,12 @@ class CreateDtoTest extends TestCase
         ]);
         $this->idAccount->save();
 
+        $this->account = (new Account())->forceFill([
+            'name' => 'Agel-Nash',
+            'email' => 'test@example.com',
+        ]);
+        $this->account->save();
+
         $this->dto = new MainDto(
             intProp: 1,
             stringProp: 'test',
@@ -59,7 +68,8 @@ class CreateDtoTest extends TestCase
                 new NestedDto(
                     price: 200,
                     count: 1,
-                    description: 'example 2'
+                    description: 'example 2',
+                    total: 200
                 ),
                 new NestedDto(
                     price: 300,
@@ -69,6 +79,7 @@ class CreateDtoTest extends TestCase
             ]),
             emailAccount: $this->emailAccount,
             idAccount: $this->idAccount,
+            account: $this->account,
         );
     }
 
@@ -91,16 +102,19 @@ class CreateDtoTest extends TestCase
                     'price' => '200',
                     'count' => '1',
                     'description' => 'example 2',
+                    'total' => '200',
                 ],
                 [
                     'price' => '300',
                     'count' => '5',
+                    'total' => null,
                 ],
             ],
             'nullableIntProp' => '300',
             'noExistsProperty' => 'skip',
             'emailAccount' => $this->emailAccount->email,
             'idAccount' => $this->idAccount->getKey(),
+            'account' => $this->account->getKey(),
         ]);
     }
 
@@ -123,17 +137,50 @@ class CreateDtoTest extends TestCase
                     'price' => '200',
                     'count' => '1',
                     'description' => 'example 2',
+                    'total' => '200',
                 ],
                 [
                     'price' => '300',
                     'count' => '5',
+                    'total' => null,
                 ],
             ],
             'nullable_int_prop' => '300',
             'no_exists_property' => 'skip',
             'email_account' => $this->emailAccount->email,
             'id_account' => $this->idAccount->getKey(),
+            'account' => $this->account->getKey(),
         ]);
+    }
+
+    public function testSuccessProperty()
+    {
+        $dto = NestedDto::from([
+            'price' => 100,
+            'count' => 3,
+            'items' => ['a', 'b', 'c'],
+        ]);
+        $this->assertInstanceOf(NestedDto::class, $dto::class);
+    }
+
+    public function testErrorArrayProperty()
+    {
+        $dto = NestedDto::from([
+            'price' => 100,
+            'count' => 3,
+            'items' => 'a',
+        ]);
+        $this->expectException(WrongInputException::class);
+    }
+
+    public function testSkippMapperProperty()
+    {
+        $dto = NestedDto::from([
+            'price' => 100,
+            'count' => 3,
+            'debug' => (object)['field' => 'value'],
+        ]);
+        $this->assertInstanceOf(NestedDto::class, $dto::class);
     }
 
     private function check(array $input)

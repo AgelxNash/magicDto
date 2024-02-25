@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AgelxNash\MagicDto\Attributes;
 
+use AgelxNash\MagicDto\AttributeResolver;
 use AgelxNash\MagicDto\Exceptions\WrongTargetException;
 use AgelxNash\MagicDto\MagicDto;
 use Attribute;
@@ -15,20 +16,13 @@ use Stringable;
 class ArrayStrict
 {
     private array $allowedTypes = [
-        'int',
-        'integer',
-        'bool',
-        'boolean',
-        'float',
-        'string',
-        'null',
         CarbonImmutable::class,
         Carbon::class,
     ];
 
     public function __construct(public string $type)
     {
-        if (!in_array($this->type, $this->allowedTypes, true)) {
+        if (!in_array($this->type, array_merge(AttributeResolver::NATIVE_TYPES, $this->allowedTypes), true)) {
             throw new WrongTargetException(sprintf('Type %s given does not allowed', $this->type));
         }
     }
