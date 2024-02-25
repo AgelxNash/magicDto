@@ -4,22 +4,43 @@ declare(strict_types=1);
 
 namespace AgelxNash\MagicDto\Tests;
 
-use AgelxNash\MagicDto\Examples\MainDto;
-use AgelxNash\MagicDto\Examples\NestedDto;
-use AgelxNash\MagicDto\ServiceProvider;
+use AgelxNash\MagicDto\Contracts\DtoInterface;
+use AgelxNash\MagicDto\MagicDto;
+use AgelxNash\MagicDto\Tests\DTOs\MainDto;
+use AgelxNash\MagicDto\Tests\DTOs\NestedDto;
+use AgelxNash\MagicDto\Tests\Models\Account;
 use Carbon\CarbonImmutable;
-use Illuminate\Container\Container;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
-use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 class CreateDtoTest extends TestCase
 {
+    use RefreshDatabase;
+
+    private MainDto $dto;
+    private Account $emailAccount;
+    private Account $idAccount;
+
     public function setUp(): void
     {
         parent::setUp();
 
-        (new ServiceProvider(Container::getInstance()))->register();
+        $this->loadLaravelMigrations();
+        $this->createAccountsTable();
+
+        $this->emailAccount = (new Account())->forceFill([
+            'name' => 'Agel_Nash',
+            'email' => 'id@example.com',
+        ]);
+        $this->emailAccount->save();
+
+        $this->idAccount = (new Account())->forceFill([
+            'name' => 'AgelxNash',
+            'email' => 'email@example.com',
+        ]);
+        $this->idAccount->save();
 
         $this->dto = new MainDto(
             intProp: 1,
@@ -46,6 +67,8 @@ class CreateDtoTest extends TestCase
                     description: null
                 )
             ]),
+            emailAccount: $this->emailAccount,
+            idAccount: $this->idAccount,
         );
     }
 
@@ -76,6 +99,8 @@ class CreateDtoTest extends TestCase
             ],
             'nullableIntProp' => '300',
             'noExistsProperty' => 'skip',
+            'emailAccount' => $this->emailAccount->email,
+            'idAccount' => $this->idAccount->getKey(),
         ]);
     }
 
@@ -106,6 +131,8 @@ class CreateDtoTest extends TestCase
             ],
             'nullable_int_prop' => '300',
             'no_exists_property' => 'skip',
+            'email_account' => $this->emailAccount->email,
+            'id_account' => $this->idAccount->getKey(),
         ]);
     }
 
@@ -113,7 +140,7 @@ class CreateDtoTest extends TestCase
     {
         $dto = MainDto::from($input);
 
-        $this->assertSame($this->dto->toArray(), $dto->toArray());
+        $this->assertSame([], array_diff_key($this->dto->toArray(), $dto->toArray()));
 
         $dtoReflection = new ReflectionClass($this->dto);
         foreach ($dtoReflection->getProperties() as $property) {
@@ -123,9 +150,19 @@ class CreateDtoTest extends TestCase
 
             if (is_object($nativeValue)) {
                 $this->assertInstanceOf($nativeValue::class, $fromArrayValue);
-                if ($nativeValue instanceof CarbonImmutable) {
-                    $nativeValue->equalTo($fromArrayValue);
-                }
+                match (true) {
+                    $nativeValue instanceof CarbonImmutable => $this->assertTrue($nativeValue->equalTo($fromArrayValue)),
+                    $nativeValue instanceof Model => $this->assertSame(
+                        [],
+                        array_diff_key($nativeValue->toArray(), $this->{$property->getName()}->toArray())
+                    ),
+                    $nativeValue instanceof DtoInterface => $this->assertSame(
+                        [],
+                        array_diff_key($nativeValue->toArray(), $fromArrayValue->toArray())
+                    ),
+                    default => null, // skip
+                };
+
                 continue;
             }
 

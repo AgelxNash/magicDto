@@ -21,7 +21,10 @@
         "illuminate/container": "^9|^10|^11"
     },
     "require-dev": {
-        "phpunit/phpunit": "^8.5.30|^9.0"
+        "ext-pdo": "*",
+        "ext-pdo_sqlite": "*",
+        "phpunit/phpunit": "^8.5.30|^9.0",
+        "orchestra/testbench": "^7|^8|^9"
     },
     "suggest": {
         "illuminate/database": "If you want autowiring Eloquent models via \\AgelxNash\\MagicDto\\Attributes\\InjectModel"
@@ -33,8 +36,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "AgelxNash\\MagicDto\\Tests\\": "tests/",
-            "AgelxNash\\MagicDto\\Examples\\": "examples/"
+            "AgelxNash\\MagicDto\\Tests\\": "tests/"
         }
     },
     "config": {

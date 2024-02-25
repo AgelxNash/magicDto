@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AgelxNash\MagicDto\Examples;
+namespace AgelxNash\MagicDto\Tests\DTOs;
 
 use AgelxNash\MagicDto\MagicDto;
 

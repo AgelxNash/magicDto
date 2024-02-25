@@ -25,7 +25,7 @@ class InjectModel
         }
     }
 
-    public function handle(string $where)
+    public function handle(string|int $where)
     {
         return $this->class::query()->where($this->field, '=', $where)->first();
     }
